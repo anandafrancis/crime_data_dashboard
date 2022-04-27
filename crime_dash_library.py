@@ -51,7 +51,7 @@ class CrimeReport:
             dataframe with no nan values in offense code group
         '''
         
-        # create dict w keys as offense code groups and values as list of corresponding codes
+        # create dict with keys as offense code groups and values as list of corresponding codes
         off_codes = {off: list(self.data[self.data.offense_code_group == off].offense_code.unique()) 
                      for off in self.data['offense_code_group'].unique()}
         
@@ -128,9 +128,10 @@ class CrimeReport:
         # remove unneccesary columns
         self.data = self.data.drop(columns=del_cols)
         
-        # remove zip code, city and state from location
-        self.data['street'] = self.data['street'].apply(lambda row: row.split('\n')[0])
-        
-        # add intersection col
-        self.data['intersection'] = self.data['street'].apply(lambda row: bool(re.findall('&', row)))
+        if fix_streets == True:
+            # remove zip code, city and state from location
+            self.data['street'] = self.data['street'].apply(lambda row: row.split('\n')[0])
+            
+            # add intersection col
+            self.data['intersection'] = self.data['street'].apply(lambda row: bool(re.findall('&', row)))
         
