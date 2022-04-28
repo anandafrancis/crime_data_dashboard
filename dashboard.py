@@ -51,16 +51,20 @@ def main():
 
     app = Dash(__name__)
     
+    app = Dash(__name__)
+    
     app.layout = html.Div(
         children=[
-            
+            # add title
             html.H1(children="Boston Crime Analytics",
                     style = {"color": "black", "fontSize": "48px", "fontWeight": "bold", "textAlign": "center", "margin": "auto"}
             ),
+            # add header
             html.P(
                 children="Analyze the types of crimes and the number of crimes committed in Boston from August 2015 to April 2022 on a yearly, monthly, daily, and hourly basis and at a street level",
                 style = {"color": "black", "textAlign": "center", "margin": "4px auto", 'maxWidth': '384px'}
             ),
+            # add year slider
             html.Div(children="Year", className="menu-title"),
             dcc.Slider(
                 id='year-slider', 
@@ -77,7 +81,9 @@ def main():
                        '2021': '2021',
                        '2022': '2022'},
             ),
+            # add break
             html.Br(),
+            # add offense code group multi-value dropdown
             html.Div(children="Offense Code Group", className="menu-title"),
             dcc.Dropdown(
                 id="offense-filter",
@@ -87,45 +93,55 @@ def main():
                 clearable=False,
                 style = dict(width='50%'),
                 ),
+            # add break
             html.Br(),
+            # add map scatter plot
             html.Div(
                 children=dcc.Graph(
                     id="graph-chart", config={"displayModeBar": False},
                 ),
                 className="card",
             ),
+            # add break
             html.Br(),
+            # add animation
             html.Div(
                 children=dcc.Graph(
                     id="animation1", config={"displayModeBar": False},
                     ),
                 className='card',
                 ),
+            # add animation
             html.Div(
                 children=dcc.Graph(
                     id="animation2", config={"displayModeBar": False},
                     ),
                 className='card',
                 ),
+            # add animation
             html.Div(
                 children=dcc.Graph(
                     id="animation3", config={"displayModeBar": False},
                     ),
                 className='card',
                 ),
+            # add bar chart
             html.Div(
                 children=dcc.Graph(
                     id="bar-chart", config={"displayModeBar": False}
                 ),
                 className="card",
             ),
+            # add suplots of line graphs
             html.Div(
                 children=dcc.Graph(
                     id="line-chart", config={"displayModeBar": False}
                 ),
                 className="card",
             ),
+           # add break
             html.Br(),
+            # add street multi-value dropdown
             html.Div(children="Street", className="menu-title"),
             dcc.Dropdown(
                 id="street-filter",
@@ -135,6 +151,7 @@ def main():
                 clearable=False,
                 style = dict(width='50%'),
                 ),
+            # add offense code group multi-value dropdown
             html.Div(children="Crime", className="menu-title"),
             dcc.Dropdown(
                 id="crime-filter",
@@ -144,6 +161,7 @@ def main():
                 clearable=False,
                 style = dict(width='50%'),
                 ),
+            # add sankey diagram
             html.Div(
                 children=dcc.Graph(
                     id="street_chart", config={"displayModeBar": False}
@@ -233,6 +251,7 @@ def main():
         # sort values in descending order
         # filter DataFrame by count
         # create Sankey diagram
+        # source used: https://github.ccs.neu.edu/rachlin/ds3500_sp22
         crime_sankey = crime_sankey.groupby(['street', 'offense_code_group']).size().reset_index(name='count')
         crime_sankey = crime_sankey.sort_values('count', ascending=False)
         crime_sankey = crime_sankey[crime_sankey["count"] >= count]
@@ -240,7 +259,7 @@ def main():
         
         
         
-        # Map Plot/Bar Chart/Line Chart Subplots
+        # Map Scatter Plot/Bar Chart/Line Chart Subplots
         # return non-updated dashboard when nothing is selected in filter
         if len(offense) == 0:
             return dash.no_update
@@ -251,8 +270,8 @@ def main():
             if offense == "All Offense Code Groups":
                 graph_chart = px.scatter_mapbox(crime_ybool[crime_ybool["offense_code_group"].isin(offenses)], lat="lat", lon="long", 
                                                 hover_name="incident_number", hover_data=["year", "offense_code_group", "offense_description", 
-                                                                                          "district", "street", "datetime"],
-                        color_discrete_sequence=["fuchsia"], zoom=10, height=600)
+                                                "district", "street", "datetime"],
+                                                color_discrete_sequence=["fuchsia"], zoom=10, height=600)
                 crime = crime_ybool
             
             # plot selected single offense
@@ -260,18 +279,21 @@ def main():
             else:
                 graph_chart = px.scatter_mapbox(crime_ybool[crime_ybool["offense_code_group"]==offense], lat="lat", lon="long", 
                                                 hover_name="incident_number", hover_data=["year", "offense_code_group", "offense_description", 
-                                                                                          "district", "street", "datetime"],
-                                    color_discrete_sequence=["fuchsia"], zoom=10, height=600)
+                                                "district", "street", "datetime"],
+                                                color_discrete_sequence=["fuchsia"], zoom=10, height=600)
                 crime = crime_ybool[crime_ybool["offense_code_group"] == offense]
-       
+            
+            # make string of offense
+            offense_str = offense
+            
         elif isinstance(offense, list):
             # plot all offenses when all filter is selected
             # keep all offense code groups in DataFrame when all filter is selected
             if "All Offense Code Groups" in offense:
                 graph_chart = px.scatter_mapbox(crime_ybool[crime_ybool["offense_code_group"].isin(offenses)], lat="lat", lon="long", 
                                                 hover_name="incident_number", hover_data=["year", "offense_code_group", "offense_description", 
-                                                                                          "district", "street", "datetime"],
-                        color_discrete_sequence=["fuchsia"], zoom=10, height=600)
+                                                "district", "street", "datetime"],
+                                                color_discrete_sequence=["fuchsia"], zoom=10, height=600)
                 crime = crime_ybool
             
             # plot selected multiple offenses
@@ -279,10 +301,16 @@ def main():
             else:
                 graph_chart = px.scatter_mapbox(crime_ybool[crime_ybool["offense_code_group"].isin(offense)], lat="lat", lon="long", 
                                                 hover_name="incident_number", hover_data=["year", "offense_code_group", "offense_description", 
-                                                                                          "district", "street", "datetime"],
-                        color_discrete_sequence=["fuchsia"], zoom=10, height=600)
+                                                "district", "street", "datetime"],
+                                                color_discrete_sequence=["fuchsia"], zoom=10, height=600)
                 crime = crime_ybool[crime_ybool["offense_code_group"].isin(offense)]
-        
+            
+            # make string of offenses
+            offense_str = ""
+            for o in offense[:-1]:
+                offense_str += f"{o}, "
+            offense_str += offense[-1]
+            
         # update map plot layout style and margins
         graph_chart.update_layout(mapbox_style="open-street-map")
         graph_chart.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
@@ -296,15 +324,13 @@ def main():
         # plot bar chart of offense code groups and number of incidents for selected year
         # add title, x-axis label, y-axis label
         bar_chart = px.bar(crime_obool, x=crime_obool.index, y=crime_obool["incident_number"])
-        bar_chart.update_layout(height = 600, title_text=f"Number of Incidents of Each Offense Code Group in {year}")
+        bar_chart.update_layout(height = 600, title_text=f"Number of Incidents for Each Offense Code Group in {year}", xaxis={'categoryorder':'total descending'})
         bar_chart.update_xaxes(title_text="Offense Code Group")
         bar_chart.update_yaxes(title_text='Number of Incidents')
         
         # produce 3 subplots for month, day, and hour DataFrame data
         # add subtitles
-        line_chart = make_subplots(rows=1, cols=3, subplot_titles=(f'Number of Incidents of {offense} by Month in {year}',  
-                                                                   f'Number of Incidents of {offense} by Day in {year}',
-                                                                   f'Number of Incidents of {offense} by Hour in {year}'))
+        line_chart = make_subplots(rows=1, cols=3, subplot_titles=("Number of Incidents by Month", "Number of Incidents by Day", "Number of Incidents by Hour"))
         
         # plot month with number of incidents 
         line_chart.add_trace(
@@ -323,7 +349,7 @@ def main():
         )
         
         # add title, x-axis labels, y-axis label
-        line_chart.update_layout(title_text=f"Number of Incidents for {offense} by Month, Day, and Hour", showlegend=False)
+        line_chart.update_layout(title_text=f"Number of Incidents for {offense_str} by Month, Day, and Hour in {year}", showlegend=False)
         line_chart.update_yaxes(title_text='Number of Incidents', row=1, col=1)
         line_chart.update_xaxes(title_text='Month', row=1, col=1)
         line_chart.update_xaxes(title_text='Day', row=1, col=2)
