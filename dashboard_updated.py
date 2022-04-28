@@ -292,7 +292,7 @@ def main():
         # plot bar chart of offense code groups and number of incidents for selected year
         # add title, x-axis label, y-axis label
         bar_chart = px.bar(crime_obool, x=crime_obool.index, y=crime_obool["incident_number"])
-        bar_chart.update_layout(height = 600, title_text=f"Number of Incidents for Each Offense Code Group in {year}")
+        bar_chart.update_layout(height = 600, title_text=f"Number of Incidents for Each Offense Code Group in {year}", xaxis={'categoryorder':'total descending'})
         bar_chart.update_xaxes(title_text="Offense Code Group")
         bar_chart.update_yaxes(title_text='Number of Incidents')
         
